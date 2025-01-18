@@ -27,7 +27,7 @@ function MyPage() {
           setPosts(blogPosts.map(post => ({
             boardId: post.id,
             title: post.boardTitle,
-            date: new Date(post.createAt).toLocaleDateString(),
+            date: post.createAt,
             category: post.boardCategory,
             isPin: post.isPin,
             isSecure: post.isSecure,
@@ -35,6 +35,7 @@ function MyPage() {
           })));
           setTotalPage(Math.ceil(blogPosts.length / postsPerPage));
         }
+        console.log(response.data.blogInfo);
       } catch (error) {
         if (error.response?.status === 401) {
           alert('로그인이 필요합니다.');
@@ -86,6 +87,19 @@ function MyPage() {
       currentPage * postsPerPage
   );
 
+  const formatDate = (isoString) => {
+    const date = new Date(isoString); // ISO 문자열을 Date 객체로 변환
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).replace(/-/g, ".").replace(/\.$/, ""); // '-'를 '.'로 변경하고 마지막 '.' 제거
+  };
+
+  const handleMoreClick = () => {
+    window.scrollTo(0, 0); // 스크롤 상단으로 이동
+  };
+
   return (
       <div className="mypage">
         <h1 className="form_title">마이 페이지</h1>
@@ -106,7 +120,7 @@ function MyPage() {
                           {post.isPin && <span className="pin-badge">공지</span>}
                           {post.isSecure > 0 && <span className="secure-badge">비공개</span>}
                         </div>
-                        <span className="post-date">{post.date}</span>
+                        <span className="post-date">{formatDate(post.date)}</span>
                         <button
                             className="edit-btn"
                             onClick={() => handleEdit(post)}
